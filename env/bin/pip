@@ -1,4 +1,4 @@
-#!/home/alanyang/Personal/TextRecognition/env/bin/python3
+#!/home/alanyang/Personal/FacialRecognition/env/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
