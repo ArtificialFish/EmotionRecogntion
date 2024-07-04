@@ -1,41 +1,44 @@
-import cv2
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from math import sqrt
 
 
-def display(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = cv2.equalizeHist(gray)
+class Model(nn.Module):
+    def __init__(self):
+        """Define the architecture, i.e. what layers our network contains."""
+        super().__init__()
 
-    faces = model.detectMultiScale(gray)
-    for x, y, w, h in faces:
-        center = (x + w // 2, y + h // 2)
-        frame = cv2.ellipse(
-            frame, center, (w // 2, h // 2), 0, 0, 360, (255, 0, 255), 4
+        self.conv1 = nn.Conv2d(3, 16, 5, stride=2, padding=2)
+        self.pool = nn.MaxPool2d(2, stride=2)
+        self.conv2 = nn.Conv2d(16, 64, 5, stride=2, padding=2)
+        self.conv3 = nn.Conv2d(64, 8, 5, stride=2, padding=2)
+        self.fc_1 = nn.Linear(32, 2)
+
+        self.init_weights()
+
+    def init_weights(self):
+        """Initialize all model parameters (weights and biases) in all layers to desired distributions"""
+        for conv in [self.conv1, self.conv2, self.conv3]:
+            C_in = conv.weight.size(1)
+            nn.init.normal_(conv.weight, 0.0, 1 / sqrt(5 * 5 * C_in))
+            nn.init.constant_(conv.bias, 0.0)
+
+        nn.init.normal_(
+            self.fc_1.weight, 0.0, 1 / sqrt(self.fc_1.weight.size(1))
         )
 
-    cv2.imshow("Capture - Face detection", frame)
+        nn.init.constant_(self.fc_1.bias, 0.0)
 
+    def forward(self, x):
+        """
+        Pass output of the previous layer as the input into the next layer (after applying
+        activation functions). Returns the final output as a torch.Tensor object.
+        """
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = F.relu(self.conv3(x))
+        x = torch.flatten(x, 1)
+        x = self.fc_1(x)
 
-haar = "haarcascade_frontalface_default.xml"
-model = cv2.CascadeClassifier(haar)
-
-if not model.load(haar):
-    print("--(!)Error loading face cascade")
-    exit(0)
-
-camera = cv2.VideoCapture(0)
-
-if not camera.isOpened():
-    print("--(!)Error opening video capture")
-    exit(0)
-
-while True:
-    _, frame = camera.read()
-
-    if frame is None:
-        print("--(!) No captured frame -- Break!")
-        break
-
-    display(frame)
-
-    if cv2.waitKey(10) == 27:
-        break
+        return x
