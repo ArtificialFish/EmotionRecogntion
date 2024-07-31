@@ -7,11 +7,11 @@ with warnings.catch_warnings():
     import pandas as pd
 import torch
 
-from imageio.v3 import imread
+from cv2 import imread
 from torch.utils.data import Dataset, DataLoader
 
 
-def get_train_test_loaders(task, batch_size, **kwargs):
+def get_train_test_loaders(task="target", batch_size=32, **kwargs):
     """Return DataLoaders for train, val and test splits.
 
     Any keyword arguments are forwarded to the LandmarksDataset constructor.
@@ -32,13 +32,13 @@ def get_train_test_datasets(task="target", **kwargs):
     tr = EmotionDataset("train", task, **kwargs)
     te = EmotionDataset("test", task, **kwargs)
 
-    # Standardize
+    # # Standardize
     standardizer = ImageStandardizer()
     standardizer.fit(tr.X)
     tr.X = standardizer.transform(tr.X)
     te.X = standardizer.transform(te.X)
 
-    # Transpose the dimensions from (N,H,W,C) to (N,C,H,W)
+    # # Transpose the dimensions from (N,H,W,C) to (N,C,H,W)
     tr.X = tr.X.transpose(0, 3, 1, 2)
     te.X = te.X.transpose(0, 3, 1, 2)
 
@@ -91,7 +91,7 @@ class EmotionDataset(Dataset):
         X, y = [], []
         for _, row in df.iterrows():
             image = imread(os.path.join(path, row["filename"]))
-            X.append(image.astype("float64"))
+            X.append(image)
             y.append(row["numeric_label"])
         return np.array(X), np.array(y)
 
@@ -115,6 +115,9 @@ class ImageStandardizer(object):
         self.image_mean = X.mean(axis=(0, 1, 2))
         self.image_std = X.std(axis=(0, 1, 2))
 
+        print(self.image_mean)
+        print(self.image_std)
+
     def transform(self, X):
         """Return standardized dataset given dataset X."""
         return (X - self.image_mean) / self.image_std
@@ -122,9 +125,8 @@ class ImageStandardizer(object):
 
 if __name__ == "__main__":
     np.set_printoptions(precision=3)
-    tr, va, te, standardizer = get_train_test_datasets(task="target")
+    tr, te, standardizer = get_train_test_datasets(task="target")
     print("Train:\t", len(tr.X))
-    # print("Val:\t", len(va.X))
     print("Test:\t", len(te.X))
     print("Mean:", standardizer.image_mean)
     print("Std: ", standardizer.image_std)
