@@ -9,10 +9,20 @@ class Model(nn.Module):
         """Define the architecture, i.e. what layers our network contains."""
         super().__init__()
 
+        # Input (3x48x48)
+        # Output (16x24x24)
         self.conv1 = nn.Conv2d(3, 16, 5, stride=2, padding=2)
+
         self.pool = nn.MaxPool2d(2, stride=2)
+
+        # Input (16x12x12)
+        # Output (64x6x6)
         self.conv2 = nn.Conv2d(16, 64, 5, stride=2, padding=2)
+
+        # Input (64x3x3)
+        # Output (8x2x2)
         self.conv3 = nn.Conv2d(64, 8, 5, stride=2, padding=2)
+
         self.fc_1 = nn.Linear(32, 2)
 
         self.init_weights()
@@ -32,7 +42,7 @@ class Model(nn.Module):
 
     def forward(self, x):
         """
-        Pass output of the previous layer as the input into the next layer (after applying
+        Pass the output of the previous layer as the input into the next layer (after applying
         activation functions). Returns the final output as a torch.Tensor object.
         """
         x = self.pool(F.relu(self.conv1(x)))
