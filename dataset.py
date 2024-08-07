@@ -8,6 +8,7 @@ with warnings.catch_warnings():
 import torch
 
 from cv2 import imread
+from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 
 
@@ -32,13 +33,17 @@ def get_train_test_datasets(task="target", **kwargs):
     tr = EmotionDataset("train", task, **kwargs)
     te = EmotionDataset("test", task, **kwargs)
 
-    # # Standardize
+    # Resize
+    tr.X = resize(tr.X)
+    te.X = resize(te.X)
+
+    # Standardize
     standardizer = ImageStandardizer()
     standardizer.fit(tr.X)
     tr.X = standardizer.transform(tr.X)
     te.X = standardizer.transform(te.X)
 
-    # # Transpose the dimensions from (N,H,W,C) to (N,C,H,W)
+    # Transpose the dimensions from (N,H,W,C) to (N,C,H,W)
     tr.X = tr.X.transpose(0, 3, 1, 2)
     te.X = te.X.transpose(0, 3, 1, 2)
 
@@ -98,6 +103,21 @@ class EmotionDataset(Dataset):
     def get_semantic_label(self, numeric_label):
         """Return the string representation of the numeric class label."""
         return self.semantic_labels[numeric_label]
+
+
+def resize(X):
+    """Resize the data partition X to the size specified in the config file."""
+    image_size = (64, 64)
+    resized = []
+    for i in range(X.shape[0]):
+        xi = Image.fromarray(X[i].astype(np.uint8)).resize(
+            image_size, resample=2
+        )
+        resized.append(xi)
+    resized = [np.asarray(im) for im in resized]
+    resized = np.array(resized)
+
+    return resized
 
 
 class ImageStandardizer(object):

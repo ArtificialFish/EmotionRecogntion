@@ -9,17 +9,17 @@ class Model(nn.Module):
         """Define the architecture, i.e. what layers our network contains."""
         super().__init__()
 
-        # Input (3x48x48)
-        # Output (16x24x24)
+        # Input (3x64x64)
+        # Output (16x32x32)
         self.conv1 = nn.Conv2d(3, 16, 5, stride=2, padding=2)
 
         self.pool = nn.MaxPool2d(2, stride=2)
 
-        # Input (16x12x12)
-        # Output (64x6x6)
+        # Input (16x16x16)
+        # Output (64x8x8)
         self.conv2 = nn.Conv2d(16, 64, 5, stride=2, padding=2)
 
-        # Input (64x3x3)
+        # Input (64x4x4)
         # Output (8x2x2)
         self.conv3 = nn.Conv2d(64, 8, 5, stride=2, padding=2)
 
