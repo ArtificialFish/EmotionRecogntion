@@ -23,7 +23,7 @@ class Model(nn.Module):
         # Output (8x2x2)
         self.conv3 = nn.Conv2d(64, 8, 5, stride=2, padding=2)
 
-        self.fc_1 = nn.Linear(32, 2)
+        self.fc_1 = nn.Linear(32, 7)
 
         self.init_weights()
 

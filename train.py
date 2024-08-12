@@ -45,7 +45,7 @@ def main():
     # initial val loss for early stopping
     global_min_loss = stats[0][1]
 
-    patience = 5
+    patience = 8
     curr_count_to_patience = 0
 
     # Loop over the entire dataset multiple times

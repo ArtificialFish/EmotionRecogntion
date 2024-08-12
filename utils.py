@@ -48,7 +48,8 @@ def restore_checkpoint(
             "Enter 0 to train from scratch.",
         )
         print(">> ", end="")
-        inp_epoch = int(input())
+        # inp_epoch = int(input())
+        inp_epoch = 96
         if inp_epoch not in range(epoch + 1):
             raise Exception("Invalid epoch number")
         if inp_epoch == 0:
@@ -57,7 +58,8 @@ def restore_checkpoint(
             return model, 0, []
     else:
         print(f"Which epoch to load from? Choose in range [1, {epoch}].")
-        inp_epoch = int(input())
+        # inp_epoch = int(input())
+        inp_epoch = 96
         if inp_epoch not in range(1, epoch + 1):
             raise Exception("Invalid epoch number")
 

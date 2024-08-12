@@ -135,8 +135,8 @@ class ImageStandardizer(object):
         self.image_mean = X.mean(axis=(0, 1, 2))
         self.image_std = X.std(axis=(0, 1, 2))
 
-        print(self.image_mean)
-        print(self.image_std)
+        # print(self.image_mean)
+        # print(self.image_std)
 
     def transform(self, X):
         """Return standardized dataset given dataset X."""
