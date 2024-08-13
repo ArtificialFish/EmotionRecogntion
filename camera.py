@@ -9,8 +9,17 @@ from utils import *
 from dataset import ImageStandardizer
 
 
-def emotion_detect(face):
-    output = model(face)
+def emotion_detect(gray):
+    face_img = Image.fromarray(gray).resize((64, 64))  # Image
+
+    X = []
+    X.append(face_img)
+
+    X = np.array(X, dtype=np.float32)
+    X = standardize(X)
+    X = torch.from_numpy(X)
+
+    output = model(X)
     return predictions(output.data)
 
 
@@ -33,29 +42,23 @@ def display(frame):
 
     faces = face_model.detectMultiScale(gray)  # Matlike -> Sequence
 
-    face_img = Image.fromarray(gray).resize((64, 64))  # Image
-
-    X = []
-    X.append(face_img)
-
-    X = np.array(X, dtype=np.float32)
-    X = standardize(X)
-    X = torch.from_numpy(X)
-
-    emotion = emotion_detect(X)
-
-    emotion_text = emotion_labels[emotion]
-
     for x, y, w, h in faces:
         center = (x + w // 2, y + h // 2)
         frame = cv2.ellipse(
             frame, center, (w // 2, h // 2), 0, 0, 360, (255, 0, 255), 4
         )
 
+        x2 = x + w
+        y2 = y + h
+        gray = gray[y:y2, x:x2]
+
+        emotion = emotion_detect(gray)
+        emotion_text = emotion_labels[emotion]
+
         cv2.putText(
             frame,
             emotion_text,
-            (x + w + 50 // 2, y + h // 2),
+            (x, y - (h // 2)),
             cv2.FONT_HERSHEY_COMPLEX,
             2,
             (0, 0, 0),
@@ -63,9 +66,6 @@ def display(frame):
         )
 
     cv2.imshow("Capture - Face detection", frame)
-
-
-# GOT: numpy.ndarray, Parameter, Parameter, tuple, tuple, tuple, int
 
 
 emotion_labels = [
