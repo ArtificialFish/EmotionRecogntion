@@ -12,7 +12,7 @@ def main():
     # Data loaders
     tr_loader, te_loader, _ = get_train_test_loaders(
         task="target",
-        batch_size=32,
+        batch_size=64,
     )
 
     # Model

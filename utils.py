@@ -49,7 +49,7 @@ def restore_checkpoint(
         )
         print(">> ", end="")
         # inp_epoch = int(input())
-        inp_epoch = 96
+        inp_epoch = 120
         if inp_epoch not in range(epoch + 1):
             raise Exception("Invalid epoch number")
         if inp_epoch == 0:
@@ -59,7 +59,7 @@ def restore_checkpoint(
     else:
         print(f"Which epoch to load from? Choose in range [1, {epoch}].")
         # inp_epoch = int(input())
-        inp_epoch = 96
+        inp_epoch = 120
         if inp_epoch not in range(1, epoch + 1):
             raise Exception("Invalid epoch number")
 
