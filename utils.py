@@ -66,7 +66,7 @@ def restore_checkpoint(
     inp_path = f"epoch={inp_epoch}.checkpoint.pth.tar"
     filename = os.path.join(checkpoint_dir, inp_path)
 
-    print("Loading from checkpoint {}?".format(filename))
+    print(f"Loading from checkpoint {filename}?")
 
     if cuda:
         checkpoint = torch.load(filename)
@@ -189,7 +189,7 @@ def early_stopping(stats, curr_count_to_patience, global_min_loss):
 def make_training_plot(name="CNN Training"):
     """Set up an interactive matplotlib graph to log metrics during training."""
     plt.ion()
-    fig, axes = plt.subplots(1, 3, figsize=(20, 5))
+    _, axes = plt.subplots(1, 3, figsize=(20, 5))
     plt.suptitle(name)
     axes[0].set_xlabel("Epoch")
     axes[0].set_ylabel("Accuracy")
@@ -218,7 +218,7 @@ def log_training(epoch, stats):
     """Print the train and test accuracy/loss/auroc."""
     splits = ["Train", "Test"]
     metrics = ["Accuracy", "Loss", "AUROC"]
-    print("Epoch {}".format(epoch))
+    print(f"Epoch {epoch}")
     for j, split in enumerate(splits):
         for i, metric in enumerate(metrics):
             idx = len(metrics) * j + i
